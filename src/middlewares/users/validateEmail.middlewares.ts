@@ -1,25 +1,31 @@
 import { NextFunction, Request, Response } from "express";
-import { prismaClient } from "../../server";
 import AppError from "../../errors/appError";
+import { Repository } from "typeorm";
+import { User } from "../../entities/users.entity";
+import AppDataSource from "../../data-source";
+import { userSchema } from "../../schemas/users.schema";
+import { IUser } from "../../interfaces/users.interfaces";
 
 const validateEmailMiddlewares = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-    const { email } = req.body.validatedBody;
+  const { email } = req.body.validatedBody;
 
-    const isUser = await prismaClient.users.findUnique({
-        where: {
-            email,
-        },
-    });
+  const userRepository: Repository<User> = AppDataSource.getMongoRepository(User);
 
-    if (isUser) {
-        throw new AppError("Email already exists.", 409);
-    }
+  const findUser: User | null = await userRepository.findOneBy({
+    email: email,
+  });
 
-    return next();
+  const user: IUser = userSchema.parse(findUser);
+
+  if (user) {
+    throw new AppError("Email already exists.", 409);
+  }
+
+  return next();
 };
 
 export { validateEmailMiddlewares };

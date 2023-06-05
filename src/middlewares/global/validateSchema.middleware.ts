@@ -1,21 +1,21 @@
-// import { NextFunction, Request, Response } from "express";
-// import { AnyObject } from "yup";
-// import AppError from "../../errors/appError";
+import { NextFunction, Request, Response } from "express";
+import AppError from "../../errors/appError";
+import { z } from "zod";
 
-// const validateSchemaMiddleware =
-//   (schema: any) =>
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const validated = await schema.validate(req.body, {
-//         stripUnknown: true,
-//         abortEarly: false,
-//       });
+const validateSchemaMiddleware =
+  (schema: z.ZodSchema<any>) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const validated = schema.parse(req.body);
 
-//       req.body.validatedBody = validated;
-//       return next();
-//     } catch (err: any) {
-//       throw new AppError(err.errors, 401);
-//     }
-//   };
+      req.body.validatedBody = validated;
+      req.body = validated;
+      return next();
+    } catch (err: any) {
+      console.log(err);
 
-// export { validateSchemaMiddleware };
+      throw new AppError(err.error, 401);
+    }
+  };
+
+export { validateSchemaMiddleware };

@@ -1,22 +1,32 @@
 import { Router } from "express";
 import {
-  deleteUserController,
-  getUserController,
   getUserPerIdController,
   registerUserController,
-  updateUserController,
 } from "../controllers/users.controllers";
+import { validateAuthUserMiddleware } from "../middlewares/global/validateAuthUser.middlewares";
+import { validateIsUserMiddleware } from "../middlewares/users/validateIsUser.middleware";
+import {
+  depositController,
+  getAllDepositsController,
+} from "../controllers/deposits.controllers";
 
 const usersRoutes = Router();
 
-usersRoutes.get("", getUserController);
-
-usersRoutes.get("/:id", getUserPerIdController);
+usersRoutes.get("", validateAuthUserMiddleware, getUserPerIdController);
 
 usersRoutes.post("", registerUserController);
 
-usersRoutes.patch("", updateUserController);
+usersRoutes.post(
+  "/:userId/deposit",
+  validateAuthUserMiddleware,
+  validateIsUserMiddleware,
+  depositController
+);
 
-// usersRoutes.delete("", validateAuthUserMiddleware, deleteUserController);
+usersRoutes.get(
+  "/deposits",
+  validateAuthUserMiddleware,
+  getAllDepositsController
+);
 
 export default usersRoutes;

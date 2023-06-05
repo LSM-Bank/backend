@@ -1,18 +1,10 @@
-import { ISaving } from "./savings.interfaces";
+import {
+  transferRegisterSchema,
+  transferSchema,
+} from "../schemas/transfers.schemas";
+import { z } from "zod";
 
-interface ITransfer {
-  id: string;
-  createdAt: Date;
-  userId: string;
-  savingId: string;
-  value: number;
-  saving: ISaving;
-}
-
-interface ITransferRegister {
-  userId: string;
-  savingId: string;
-  value: number;
-}
+type ITransfer = z.infer<typeof transferSchema>;
+type ITransferRegister = z.infer<typeof transferRegisterSchema>;
 
 export { ITransfer, ITransferRegister };

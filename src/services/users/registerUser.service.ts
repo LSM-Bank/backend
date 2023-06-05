@@ -1,31 +1,16 @@
-import { hashSync } from "bcryptjs";
-import { prismaClient } from "../../server";
-import { IUserRegister } from "../../interfaces/users.interfaces";
+import { Repository } from "typeorm";
+import { User } from "../../entities/users.entity";
+import { userSchema } from "../../schemas/users.schema";
+import AppDataSource from "../../data-source";
 
-function exclude<User, Key extends keyof User>(
-  user: User,
-  keys: Key[]
-): Omit<User, Key> {
-  for (let key of keys) {
-    delete user[key];
-  }
-  return user;
-}
+const registerUserService = async (data: any) => {
+  const userRepository: Repository<User> =
+    AppDataSource.getMongoRepository(User);
+  const user = userRepository.create(data);
+  await userRepository.save(user);
 
-const registerUserService = async (data: IUserRegister) => {
-  const { password: passwordData, ...userData } = data;
-  const hashedPassword = hashSync(passwordData, 10);
-  const user = await prismaClient.users.create({
-    data: {
-      ...userData,
-      password: hashedPassword,
-      balance: 0.00
-    },
-  });
-
-  const resultUser = exclude(user, ["password"]);
-
-  return resultUser;
+  const newUser = userSchema.parse(user);
+  return newUser;
 };
 
 export { registerUserService };

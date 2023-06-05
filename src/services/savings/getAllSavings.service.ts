@@ -1,23 +1,19 @@
-import { prismaClient } from "../../server";
+import { Repository } from "typeorm";
+import AppDataSource from "../../data-source";
+import { Savings } from "../../entities/savings.entity";
+import { ISaving } from "../../interfaces/savings.interfaces";
+import { listSavingsSchemaResponse } from "../../schemas/savings.schemas";
 
-const getAllSavingsService = async (
-  skip: number,
-  take: number,
-  userId: string
-): Promise<any> => {
-  const [savings, total] = await prismaClient.$transaction([
-    prismaClient.savings.findMany({
-      take,
-      skip,
-      where: {
-        userId: userId,
-      },
-    }),
-    prismaClient.savings.count(),
-  ]);
+const getAllSavingsService = async (userId: string): Promise<any> => {
+  const repository: Repository<Savings> =
+    AppDataSource.getMongoRepository(Savings);
 
-  const totalPage = Math.ceil(total / take);
-  return { total, totalPage, savings };
+  const savings: ISaving[] = await repository.find({
+    where: {
+      userId: userId,
+    },
+  });
+  return savings;
 };
 
 export { getAllSavingsService };

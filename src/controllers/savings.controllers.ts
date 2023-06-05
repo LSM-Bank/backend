@@ -5,20 +5,20 @@ import {
 } from "../interfaces/savings.interfaces";
 import { registerSavingService } from "../services/savings/registerSaving.service";
 import { getAllSavingsService } from "../services/savings/getAllSavings.service";
-import { updateSavingService } from "../services/savings/updateAnnouncement.service";
+import { updateSavingService } from "../services/savings/updateSaving.service";
 import { deleteSavingService } from "../services/savings/deleteSaving.service";
 
 const registerSavingController = async (req: Request, res: Response) => {
-  const payload: ISavingRegister = req.body.validatedBody;
-  const data = await registerSavingService(payload, req.body.validateAuth.sub);
+  const payload: ISavingRegister = req.body;
+  console.log(req.body.validateAuth.id);
+  
+  const data = await registerSavingService(payload, req.body.validateAuth.id);
   return res.status(201).json(data);
 };
 
 const getAllSavingsController = async (req: Request, res: Response) => {
-  const skip = Number(req.query.skip) || 0;
-  const take = Number(req.query.take) || 12;
   const { id } = req.body.validateAuth;
-  const data = await getAllSavingsService(skip, take, id);
+  const data = await getAllSavingsService(id);
   return res.status(200).json(data);
 };
 

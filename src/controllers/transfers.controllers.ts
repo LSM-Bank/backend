@@ -1,10 +1,21 @@
 import { Request, Response } from "express";
-import { registerTransferSavingToUserService } from "../services/transfers/transferSavingToUser.service";
 import { getAllTransfersService } from "../services/transfers/getAllTransfers.service";
+import { transferUserToSavingService } from "../services/transfers/transferUserToSaving.service";
+import { transferSavingToUserService } from "../services/transfers/transferSavingToUser.service";
 
 const transferSavingToUserController = async (req: Request, res: Response) => {
   const { body, params } = req;
-  const data = await registerTransferSavingToUserService(
+  const data = await transferSavingToUserService(
+    params.savingId,
+    params.userId,
+    body.value
+  );
+  return res.status(201).json(data);
+};
+
+const transferUserToSavingController = async (req: Request, res: Response) => {
+  const { body, params } = req;
+  const data = await transferUserToSavingService(
     params.savingId,
     body.validateAuth.id,
     body.value
@@ -14,10 +25,12 @@ const transferSavingToUserController = async (req: Request, res: Response) => {
 
 const getAllTransfersController = async (req: Request, res: Response) => {
   const { id } = req.body.validateAuth;
-  const skip = Number(req.query.skip) || 0;
-  const take = Number(req.query.take) || 12;
-  const data = await getAllTransfersService(skip, take, id);
+  const data = await getAllTransfersService(id);
   return res.status(201).json(data);
 };
 
-export { transferSavingToUserController, getAllTransfersController };
+export {
+  transferSavingToUserController,
+  getAllTransfersController,
+  transferUserToSavingController,
+};

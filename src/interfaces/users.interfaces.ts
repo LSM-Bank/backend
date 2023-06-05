@@ -1,29 +1,15 @@
-import { ISaving } from "./savings.interfaces";
-import { ITransfer } from "./transfers.interfaces";
+import { z } from "zod";
 
+import {
+  listUsersSchemaResponse,
+  userRegisterSchema,
+  userSchema,
+} from "../schemas/users.schema";
 
+type IUserRegister = z.infer<typeof userRegisterSchema>;
+type IUser = z.infer<typeof userSchema>;
+type IListUsersResponse = z.infer<typeof listUsersSchemaResponse>;
 
-interface IUser {
-  id: string;
-  name: string;
-  email: string;
-  balance: number;
-  savings: ISaving[];
-  transfers: ITransfer[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+type IUserUpdate = Partial<IUserRegister>;
 
-interface IUserRegister {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface IUserUpdate {
-  name?: string;
-  email?: string;
-  balance?: number;
-}
-
-export { IUser, IUserRegister, IUserUpdate };
+export { IUser, IUserRegister, IListUsersResponse, IUserUpdate };

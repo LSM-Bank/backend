@@ -1,6 +1,6 @@
 import {z} from "zod";
-import { createLoginSchema } from "../schemas/login.schemas";
+import { loginSchema } from "../schemas/login.schemas";
 
-type ILogin = z.infer<typeof createLoginSchema>
+type ILogin = z.infer<typeof loginSchema>
 
 export { ILogin };

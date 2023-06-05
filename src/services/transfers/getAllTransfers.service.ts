@@ -1,23 +1,20 @@
-import { prismaClient } from "../../server";
+import { Repository } from "typeorm";
+import { Transfer } from "../../entities/transfers.entity";
+import AppDataSource from "../../data-source";
+import { ITransfer } from "../../interfaces/transfers.interfaces";
 
-const getAllTransfersService = async (
-  skip: number,
-  take: number,
-  userId: string
-): Promise<any> => {
-  const [transfers, total] = await prismaClient.$transaction([
-    prismaClient.transfers.findMany({
-      take,
-      skip,
-      where: {
-        userId: userId,
-      },
-    }),
-    prismaClient.transfers.count(),
-  ]);
 
-  const totalPage = Math.ceil(total / take);
-  return { total, totalPage, transfers };
+const getAllTransfersService = async (userId: string): Promise<any> => {
+  const transferRepository: Repository<Transfer> =
+    AppDataSource.getMongoRepository(Transfer);
+
+  const transfers: ITransfer[] = await transferRepository.find({
+    where: {
+      userId: userId,
+    },
+  });
+
+  return transfers;
 };
 
 export { getAllTransfersService };
